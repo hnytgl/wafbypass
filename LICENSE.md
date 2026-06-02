@@ -1,5 +1,5 @@
-    WhatWaf; Detect and bypass WAF/IDS/IPS
-    Copyright (C) 2019 Ekultek
+    WAFBypass; Advanced WAF detection and bypass tool
+    Copyright (C) 2024 hnytgl
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

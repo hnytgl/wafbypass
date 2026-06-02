@@ -1,8 +1,8 @@
 #!/bin/bash
 
-mkdir -p ~/.whatwaf/files ~/.whatwaf/tampers ~/.whatwaf/plugins
+mkdir -p ~/.wafbypass/files ~/.wafbypass/tampers ~/.wafbypass/plugins
 
-rsync -avvz content/files/* ~/.whatwaf/files
-rsync -avvz content/plugins/* ~/.whatwaf/plugins
-rsync -avvz content/tampers/* ~/.whatwaf/tampers
-touch ~/.whatwaf/whatwaf.sqlite
+rsync -avvz content/files/* ~/.wafbypass/files
+rsync -avvz content/plugins/* ~/.wafbypass/plugins
+rsync -avvz content/tampers/* ~/.wafbypass/tampers
+touch ~/.wafbypass/wafbypass.sqlite

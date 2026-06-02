@@ -41,8 +41,8 @@ def ensure_no_issue(param):
     ensure that there is not already an issue that has been created for yours
     """
     urls = (
-        "https://github.com/Ekultek/WhatWaf/issues",
-        "https://github.com/Ekultek/WhatWaf/issues?q=is%3Aissue+is%3Aclosed"
+        "https://github.com/hnytgl/wafbypass/issues",
+        "https://github.com/hnytgl/wafbypass/issues?q=is%3Aissue+is%3Aclosed"
     )
     for url in urls:
         req = requests.get(url)
@@ -62,8 +62,8 @@ def find_url(params):
     get the URL that your issue is created at
     """
     searches = (
-        "https://github.com/Ekultek/WhatWaf/issues",
-        "https://github.com/Ekultek/WhatWaf/issues?q=is%3Aissue+is%3Aclosed"
+        "https://github.com/hnytgl/wafbypass/issues",
+        "https://github.com/hnytgl/wafbypass/issues?q=is%3Aissue+is%3Aclosed"
     )
     for search in searches:
         retval = "https://github.com{}"
@@ -111,7 +111,7 @@ def request_issue_creation(exception_details):
         is_newest = lib.settings.check_version(speak=False)
         if not is_newest:
             lib.formatter.error(
-                "whatwaf is not the newest version, in order to create an issue, please update whatwaf"
+                "wafbypass is not the newest version, in order to create an issue, please update wafbypass"
             )
             exit(1)
 
@@ -139,7 +139,7 @@ def request_issue_creation(exception_details):
             issue_creation_json = issue_creation_json.encode("utf-8")
         if not ensure_no_issue(identifier):
             req = Request(
-                url="https://api.github.com/repos/ekultek/whatwaf/issues", data=issue_creation_json,
+                url="https://api.github.com/repos/ekultek/wafbypass/issues", data=issue_creation_json,
                 headers={"Authorization": "token {}".format(get_token(lib.settings.TOKEN_PATH))}
             )
             try:
@@ -176,7 +176,7 @@ def request_firewall_issue_creation(path):
         is_newest = lib.settings.check_version(speak=False)
         if not is_newest:
             lib.formatter.error(
-                "whatwaf is currently not the newest version, please update to request a firewall script creation"
+                "wafbypass is currently not the newest version, please update to request a firewall script creation"
             )
             exit(1)
 
@@ -208,7 +208,7 @@ def request_firewall_issue_creation(path):
 
         if not ensure_no_issue(identifier):
             req = Request(
-                url="https://api.github.com/repos/ekultek/whatwaf/issues", data=_json_data,
+                url="https://api.github.com/repos/ekultek/wafbypass/issues", data=_json_data,
                 headers={"Authorization": "token {}".format(get_token(lib.settings.TOKEN_PATH))}
             )
             try:

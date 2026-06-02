@@ -28,14 +28,14 @@ except:
     pass
 
 # version number <major>.<minor>.<commit>
-VERSION = "1.9.7"
+VERSION = "2.0.0"
 
 # version string
 VERSION_TYPE = "($dev)" if VERSION.count(".") > 1 else "($stable)"
 
 # the saying that will go inside of the banner
 SAYING = "/><script>alert();</script>"
-INSIDE_SAYING = '"\033[94mWhatWaf?\033[0m\033[1m<|>v{}{}\033[1m"'.format(VERSION, VERSION_TYPE)
+INSIDE_SAYING = '"\033[94mWAFBypass\033[0m\033[1m<|>v{}{}\033[1m"'.format(VERSION, VERSION_TYPE)
 
 # cool looking banner
 BANNER = """\b\033[1m
@@ -46,7 +46,7 @@ BANNER = """\b\033[1m
 \t|  |   |  |   |  |   |  |    __.  |
 \t|  |.'.|  |   |  |.'.|  |   |   .'
 \t|         |   |         |   |___|
-\t|   ,'.   |hat|   ,'.   |af .---.
+\t|   ,'.   |af|   ,'.   |ypass .---.
 \t'--'   '--'   '--'   '--'   '---'
 {}
 \033[0m"""
@@ -61,7 +61,7 @@ PLUGINS_IMPORT_TEMPLATE = "content.plugins.{}"
 TAMPERS_IMPORT_TEMPLATE = "content.tampers.{}"
 
 # link to the create a new issue page
-ISSUES_LINK = "https://github.com/Ekultek/WhatWaf/issues/new"
+ISSUES_LINK = "https://github.com/hnytgl/wafbypass/issues/new"
 
 # regex to detect the URL protocol (http or https)
 PROTOCOL_DETECTION = re.compile("http(s)?")
@@ -73,7 +73,7 @@ URL_QUERY_REGEX = re.compile(r"(.*)[?|#](.*){1}\=(.*)")
 CUR_DIR = os.getcwd()
 
 # path to our home directory
-HOME = "{}/.whatwaf".format(os.path.expanduser("~"))
+HOME = "{}/.wafbypass".format(os.path.expanduser("~"))
 
 # plugins (waf scripts) path
 try:
@@ -122,7 +122,7 @@ except IOError:
     POST_STRING_NAMES_PATH = "{}/files/post_strings.lst".format(HOME)
 
 # path to the database file
-DATABASE_FILENAME = "{}/whatwaf.sqlite".format(HOME)
+DATABASE_FILENAME = "{}/wafbypass.sqlite".format(HOME)
 
 # payloads that have been exported from database cache
 EXPORTED_PAYLOADS_PATH = "{}/payload_exports".format(HOME)
@@ -135,7 +135,7 @@ except IOError:
     DEFAULT_PAYLOAD_PATH = "{}/files/default_payloads.lst".format(HOME)
 
 # default user-agent
-DEFAULT_USER_AGENT = "whatwaf/{} (Language={}; Platform={})".format(
+DEFAULT_USER_AGENT = "wafbypass/{} (Language={}; Platform={})".format(
     VERSION, sys.version.split(" ")[0], platform.platform().split("-")[0]
 )
 
@@ -315,6 +315,39 @@ def get_random_agent(path="{}/files/user_agents.txt"):
             return random.choice(items)
 
 
+class SessionManager(object):
+    """
+    session-based HTTP manager with connection pooling and retry support
+    """
+    def __init__(self, proxy=None, agent=None, timeout=15, max_retries=3):
+        self.session = requests.Session()
+        self.timeout = timeout
+        self.max_retries = max_retries
+        if proxy:
+            self.session.proxies = {"http": proxy, "https": proxy}
+        if agent:
+            self.session.headers.update({"User-Agent": agent})
+        self.session.headers.update({"Connection": "keep-alive"})
+        self.session.verify = False
+        adapter = requests.adapters.HTTPAdapter(
+            pool_connections=10,
+            pool_maxsize=20,
+            max_retries=max_retries,
+            pool_block=False
+        )
+        self.session.mount("http://", adapter)
+        self.session.mount("https://", adapter)
+
+    def get(self, url, **kwargs):
+        return self.session.get(url, timeout=self.timeout, **kwargs)
+
+    def post(self, url, **kwargs):
+        return self.session.post(url, timeout=self.timeout, **kwargs)
+
+    def close(self):
+        self.session.close()
+
+
 def configure_request_headers(**kwargs):
     """
     configure the HTTP request headers with a user defined
@@ -357,7 +390,7 @@ def configure_request_headers(**kwargs):
             exit(1)
     else:
         lib.formatter.warn(
-            "it is highly advised to use a proxy when using WhatWaf. do so by passing the proxy flag "
+            "it is highly advised to use a proxy when using WAFBypass. do so by passing the proxy flag "
             "(IE `--proxy http://127.0.0.1:9050`) or by passing the Tor flag (IE `--tor`)", minor=True
         )
     if agent is not None:
@@ -589,7 +622,7 @@ def check_version(speak=True):
     """
     check the version number for updates
     """
-    version_url = "https://raw.githubusercontent.com/Ekultek/WhatWaf/master/lib/settings.py"
+    version_url = "https://raw.githubusercontent.com/hnytgl/wafbypass/master/lib/settings.py"
     try:
         req = requests.get(version_url)
         content = req.text

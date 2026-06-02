@@ -34,7 +34,7 @@ class StoreDictKeyPairs(Action):
         setattr(namespace, self.dest, self.retval)
 
 
-class WhatWafParser(ArgumentParser):
+class WAFBypassParser(ArgumentParser):
 
     """
     our cool little class that is a child of argparse where we will
@@ -43,12 +43,12 @@ class WhatWafParser(ArgumentParser):
     """
 
     def __init__(self):
-        super(WhatWafParser, self).__init__()
+        super(WAFBypassParser, self).__init__()
 
     @staticmethod
     def cmd_parser():
-        parser = ArgumentParser(prog="whatwaf", add_help=True, usage=(
-            "./whatwaf -[u|l|b|g] VALUE|PATH|PATH|PATH [-p|--pl] PAYLOAD,..|PATH [--args]"
+        parser = ArgumentParser(prog="wafbypass", add_help=True, usage=(
+            "./wafbypass -[u|l|b|g] VALUE|PATH|PATH|PATH [-p|--pl] PAYLOAD,..|PATH [--args]"
         ))
 
         mandatory = parser.add_argument_group("mandatory arguments",
@@ -124,7 +124,7 @@ class WhatWafParser(ArgumentParser):
                                         "encoded using a single tamper script load path")
 
         output_opts = parser.add_argument_group("output options",
-                                                "arguments that control how WhatWaf handles output")
+                                                "arguments that control how WAFBypass handles output")
         output_opts.add_argument("-F", "--format", action="store_true", dest="formatOutput",
                                  help="Format the output into a dict and display it")
         output_opts.add_argument("-J", "--json", action="store_true", dest="sendToJSON",
@@ -188,8 +188,8 @@ class WhatWafParser(ArgumentParser):
                           help="Run in verbose mode (more output)")
         misc.add_argument("--hide", dest="hideBanner", action="store_true",
                           help="Hide the banner during the run")
-        misc.add_argument("--update", dest="updateWhatWaf", action="store_true",
-                          help="Update WhatWaf to the newest development version")
+        misc.add_argument("--update", dest="updateWAFBypass", action="store_true",
+                          help="Update WAFBypass to the newest development version")
         misc.add_argument("--save", dest="saveEncodedPayloads", metavar="FILENAME",
                           help="Save the encoded payloads into a file")
         misc.add_argument("--skip", dest="skipBypassChecks", action="store_true",
@@ -201,7 +201,7 @@ class WhatWafParser(ArgumentParser):
                           help="Attempt to determine what web server is running on the backend "
                                "(IE Apache, Nginx, etc.. *default=False)")
         misc.add_argument("--wafs", action="store_true", default=False, dest="viewPossibleWafs",
-                          help="Output a list of possible firewalls that can be detected by WhatWaf")
+                          help="Output a list of possible firewalls that can be detected by WAFBypass")
         misc.add_argument("--tampers", action="store_true", dest="listEncodingTechniques",
                           help="Output a list of tamper script load paths with their description")
 

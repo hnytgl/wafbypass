@@ -3,7 +3,7 @@ import time
 import shlex
 import subprocess
 
-from lib.cmd import WhatWafParser
+from lib.cmd import WAFBypassParser
 from lib.firewall_found import request_issue_creation
 from content import (
     detection_main,
@@ -53,16 +53,16 @@ except Exception:
 
 
 def main():
-    opt = WhatWafParser().cmd_parser()
+    opt = WAFBypassParser().cmd_parser()
 
     if not len(sys.argv) > 1:
         error("you failed to provide an option, redirecting to help menu")
         time.sleep(2)
-        cmd = "whatwaf --help"
+        cmd = "wafbypass --help"
         subprocess.call(shlex.split(cmd))
         exit(0)
 
-    # if you feel that you have to many folders or files in the whatwaf home folder
+    # if you feel that you have to many folders or files in the wafbypass home folder
     # we'll give you an option to clean it free of charge
     if opt.cleanHomeFolder:
         import shutil
@@ -72,7 +72,7 @@ def main():
             warn(
                 "cleaning the home folder: {home}, if you have installed with setup.sh, "
                 "this will erase the executable script along with everything inside "
-                "of the {home} directory (fingerprints, scripts, copies of whatwaf, etc) "
+                "of the {home} directory (fingerprints, scripts, copies of wafbypass, etc) "
                 "if you are sure you want to do this press ENTER now. If you changed "
                 "your mind press CNTRL-C now".format(home=HOME)
             )
@@ -98,7 +98,7 @@ def main():
             warn(
                 "there appears to be no payloads stored in the database, to create payloads use the following options:"
             )
-            proc = subprocess.check_output(["python", "whatwaf", "--help"])
+            proc = subprocess.check_output(["python", "wafbypass", "--help"])
             parsed_help = parse_help_menu(str(proc), "encoding options:", "output options:")
             print(parsed_help)
         exit(1)
@@ -117,7 +117,7 @@ def main():
             warn(
                 "there appears to be no payloads stored in the database, to create payloads use the following options:"
             )
-            proc = subprocess.check_output(["python", "whatwaf", "--help"])
+            proc = subprocess.check_output(["python", "wafbypass", "--help"])
             parsed_help = parse_help_menu(proc, "encoding options:", "output options:")
             print(parsed_help)
         exit(0)
@@ -176,7 +176,7 @@ def main():
             fatal("invalid load path given, check the load path and try again")
         exit(0)
 
-    if opt.updateWhatWaf:
+    if opt.updateWAFBypass:
         info("update in progress")
         cmd = shlex.split("git pull origin master")
         subprocess.call(cmd)
@@ -229,14 +229,14 @@ def main():
                 print("{}".format(imported.__product__))
             except ImportError:
                 pass
-        info("WhatWaf can detect a total of {} web application protection systems".format(len(wafs_list)))
+        info("WAFBypass can detect a total of {} web application protection systems".format(len(wafs_list)))
         exit(0)
 
     # gotta find a better way to check for updates so ima hotfix it
     info("checking for updates")
     is_newest = check_version(speak=False)
     if not is_newest:
-        warn("there is an update available for whatwaf", minor=True)
+        warn("there is an update available for wafbypass", minor=True)
 
     format_opts = [opt.sendToYAML, opt.sendToCSV, opt.sendToJSON]
     if opt.formatOutput:
@@ -246,7 +246,7 @@ def main():
                 amount_used += 1
         if amount_used > 1:
             warn(
-                "multiple file formats have been detected, WhatWaf will attempt to save to both files, however "
+                "multiple file formats have been detected, WAFBypass will attempt to save to both files, however "
                 "there is a high probability that this will cause issues (such as missing information) while "
                 "saving to the files"
             )
@@ -523,7 +523,7 @@ def main():
 
         sep = "-" * 30
         fatal(
-            "WhatWaf has caught an unhandled exception with the error message: '{}'.".format(str(e))
+            "WAFBypass has caught an unhandled exception with the error message: '{}'.".format(str(e))
         )
         exception_data = "Traceback (most recent call):\n{}{}".format(
             "".join(traceback.format_tb(sys.exc_info()[2])), str(e)

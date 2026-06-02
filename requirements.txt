@@ -1,2 +1,4 @@
-beautifulsoup4 >= 4.6.3
-requests
+beautifulsoup4>=4.12.0
+requests>=2.31.0
+pyyaml>=6.0
+urllib3>=1.26.0

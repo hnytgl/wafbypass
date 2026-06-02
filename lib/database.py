@@ -7,7 +7,7 @@ import lib.formatter
 
 def initialize():
     """
-    initialize the database and the HOME directory (~/.whatwaf)
+    initialize the database and the HOME directory (~/.wafbypass)
     """
     if not os.path.exists(lib.settings.DATABASE_FILENAME):
         # idk why but apparently i never created the directory :|
