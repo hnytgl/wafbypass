@@ -1,0 +1,45 @@
+# WAFBypass 扫描配置文件示例
+# 使用方式: python wafbypass --config example_config.yaml -u https://target.com/
+
+# 扫描目标
+target_type: single  # single / list / burp
+
+# 请求配置
+request:
+  user_agent: random
+  timeout: 30
+  throttle: 0.5
+  force_ssl: false
+  method: GET
+  headers:
+    X-Custom-Header: value
+
+# Payload 配置
+payloads:
+  type: all  # sqli / xss / xxe / ssti / lfi / cmdi / all
+  custom: []  # 自定义 payload 列表
+
+# 代理配置
+proxy:
+  enabled: false
+  url: socks5://127.0.0.1:1080
+  use_tor: false
+  tor_port: 9050
+
+# 检测配置
+detection:
+  skip_bypass: false
+  verify_number: 5
+  tamper_display: 5
+  determine_webserver: true
+
+# 输出配置
+output:
+  format: true
+  json: true
+  yaml: false
+  csv: false
+  html_report: true
+  fingerprint: false
+  traffic_file: ""
+  output_dir: ""

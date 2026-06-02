@@ -92,6 +92,10 @@ class WAFBypassParser(ArgumentParser):
                               help="Provide your own payloads separated by a comma IE AND 1=1,AND 2=2")
         req_args.add_argument("--pl", dest="payloadList", metavar="PAYLOAD-LIST-PATH",
                               help="Provide a file containing a list of payloads 1 per line")
+        req_args.add_argument("--payload-type", dest="payloadType", metavar="TYPE",
+                              choices=["sqli", "xss", "xxe", "ssti", "lfi", "cmdi", "all"],
+                              default="all",
+                              help="Select payload category: sqli, xss, xxe, ssti, lfi, cmdi, all (*default=all)")
         req_args.add_argument("--force-ssl", dest="forceSSL", action="store_true",
                               help="Force the assignment of HTTPS instead of HTTP while processing "
                                    "(*default=HTTP unless otherwise specified by URL)")
@@ -141,6 +145,8 @@ class WAFBypassParser(ArgumentParser):
                                  help="store all HTTP traffic headers into a file of your choice")
         output_opts.add_argument("--force-file", action="store_true", default=False, dest="forceFileCreation",
                                  help="Force the creation of a file even if there is no protection identified")
+        output_opts.add_argument("--html-report", action="store_true", dest="htmlReport",
+                                 help="Generate a professional HTML pentest report")
         output_opts.add_argument("-o", "--output", metavar="DIR", dest="outputDirectory", default=None,
                                  help="Save a copy of the file to an arbitrary directory")
 
@@ -192,6 +198,8 @@ class WAFBypassParser(ArgumentParser):
                           help="Update WAFBypass to the newest development version")
         misc.add_argument("--save", dest="saveEncodedPayloads", metavar="FILENAME",
                           help="Save the encoded payloads into a file")
+        misc.add_argument("--config", dest="configFile", metavar="CONFIG-YAML",
+                          help="Load scan configuration from a YAML file")
         misc.add_argument("--skip", dest="skipBypassChecks", action="store_true",
                           help="Skip checking for bypasses and just identify the firewall")
         misc.add_argument("--verify-num", dest="verifyNumber", metavar="INT", type=int,

@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 import shlex
@@ -298,6 +299,22 @@ def main():
         else:
             warn("it appears Tor is not configured properly")
 
+    # Load config file if provided
+    if opt.configFile is not None:
+        try:
+            import yaml
+            with open(opt.configFile) as cfg:
+                config = yaml.safe_load(cfg)
+            if config and config.get("payloads", {}).get("type"):
+                opt.payloadType = config["payloads"]["type"]
+            if config and config.get("output", {}).get("html_report"):
+                opt.htmlReport = config["output"]["html_report"]
+            info("loaded configuration from '{}'".format(opt.configFile))
+        except ImportError:
+            warn("YAML library not available, config file ignored. Install: pip install pyyaml")
+        except Exception as e:
+            warn("failed to load config file: {}".format(str(e)))
+
     if opt.providedPayloads is not None:
         payload_list = [p.strip() if p[0] == " " else p for p in str(opt.providedPayloads).split(",")]
         info("using provided payloads")
@@ -309,6 +326,18 @@ def main():
             exit(1)
         payload_list = [p.strip("\n") for p in open(opt.payloadList).readlines()]
         info("using provided payload file '{}'".format(opt.payloadList))
+    elif opt.payloadType != "all":
+        type_files = {
+            "sqli": "sqli.lst", "xss": "xss.lst", "xxe": "xxe.lst",
+            "ssti": "ssti.lst", "lfi": "lfi.lst", "cmdi": "cmdi.lst"
+        }
+        try:
+            payload_path = "{}/content/files/{}".format(os.getcwd(), type_files[opt.payloadType])
+            payload_list = [p.strip() for p in open(payload_path).readlines() if p.strip()]
+            info("using {} payloads ({} payloads loaded)".format(opt.payloadType.upper(), len(payload_list)))
+        except IOError:
+            payload_list = WAF_REQUEST_DETECTION_PAYLOADS
+            info("payload type '{}' file not found, using default payloads".format(opt.payloadType))
     else:
         payload_list = WAF_REQUEST_DETECTION_PAYLOADS
         info("using default payloads")
@@ -380,7 +409,7 @@ def main():
                 req_timeout=opt.requestTimeout, post_data=opt.postRequestData,
                 request_type=request_type, check_server=opt.determineWebServer,
                 threaded=opt.threaded, force_file_creation=opt.forceFileCreation,
-                save_copy_of_file=opt.outputDirectory
+                save_copy_of_file=opt.outputDirectory, html_report=opt.htmlReport
             )
         elif any(o is not None for o in [opt.runMultipleWebsites, opt.burpRequestFile]):
             info("reading from '{}'".format(opt.runMultipleWebsites or opt.burpRequestFile))
@@ -452,7 +481,7 @@ def main():
                     req_timeout=opt.requestTimeout, post_data=opt.postRequestData,
                     request_type=request_type, check_server=opt.determineWebServer,
                     threaded=opt.threaded, force_file_creation=opt.forceFileCreation,
-                    save_copy_of_file=opt.outputDirectory
+                    save_copy_of_file=opt.outputDirectory, html_report=opt.htmlReport
                 )
                 time.sleep(0.5)
 

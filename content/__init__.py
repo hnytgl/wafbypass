@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import time
 import importlib
 import random
 import threading
@@ -18,6 +19,7 @@ import lib.settings
 import lib.formatter
 import lib.database
 import lib.firewall_found
+import lib.report
 
 
 class ScriptQueue(object):
@@ -413,6 +415,11 @@ def detection_main(url, payloads, cursor, **kwargs):
     threaded = kwargs.get("threaded", None)
     force_file_creation = kwargs.get("force_file_creation", False)
     save_file_copy_path = kwargs.get("save_copy_of_file", None)
+    html_report = kwargs.get("html_report", False)
+
+    timeline = []
+    def _add_timeline(event):
+        timeline.append({"time": time.strftime("%H:%M:%S"), "event": event})
 
     current_url_netloc = urlparse.urlparse(url).netloc
 
@@ -450,6 +457,7 @@ def detection_main(url, payloads, cursor, **kwargs):
     except:
         filename = lib.settings.random_string(length=10, use_yaml=use_yaml, use_json=use_json, use_csv=use_csv)
 
+    _add_timeline("Scan started for {}".format(url))
     lib.formatter.info("request type: {}".format(request_type))
 
     if post_data is None:
@@ -524,6 +532,10 @@ def detection_main(url, payloads, cursor, **kwargs):
         found_webserver = found
     else:
         found_webserver = None
+
+    found_working_tampers = set()
+    final_status_code = 0
+    final_headers = {}
 
     # plus one for lib.settings.get_page call (i honestly dont even know wtf this means LOL)
     amount_of_products = 0
@@ -719,5 +731,15 @@ def detection_main(url, payloads, cursor, **kwargs):
             inserted_into_database_results = lib.database.insert_url(
                 current_url_netloc, [], detected_protections, cursor, webserver=found_webserver
             )
+    if html_report:
+        _add_timeline("Generating HTML report")
+        _, final_status_code, _, final_headers = normal_response
+        report_path = lib.report.save_html_report(
+            url, detected_protections, found_working_tampers, final_headers,
+            final_status_code, found_webserver, len(payloads), request_type, timeline
+        )
+        if report_path:
+            lib.formatter.success("HTML report saved to: {}".format(report_path))
+
     if inserted_into_database_results:
         lib.formatter.info("URL has been cached for future use")
