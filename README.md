@@ -76,11 +76,37 @@ WAFBypass 内置 **55+** 种绕过脚本，涵盖以下技术：
 | **SQL绕过** | SQL注释混淆、双SQL注释、数值操作转换、关键字拆分、参数碎片化 |
 | **XSS绕过** | HTML注释混淆、XSS向量变异、Script标签拆分 |
 | **HTTP层面** | HTTP参数污染(HPP)、CRLF注入、方法篡改、Content-Type操控 |
+| **Payload分片** | 智能参数分片、HPP多策略、Multipart表单分片、SQL注释分片、管道化请求、NULL字节分片、编码链分片 |
 | **高级技巧** | JSON/XML编码、缓冲区溢出填充、嵌套编码、随机垃圾字符 |
 
 查看完整列表：
 ```bash
 wafbypass --tampers
+```
+
+### Payload分片绕过技术
+
+WAFBypass v2.1 新增了强大的 **Payload分片绕过** 能力，将恶意Payload拆分为多个看似无害的片段，绕过基于单参数正则匹配的WAF规则：
+
+| 分片策略 | 原理 | 适用场景 |
+|---------|------|---------|
+| **HPP参数污染** | 将Payload拆分到同名参数的多个副本中，利用后端取最后一个值的特性 | PHP(Joomla/WordPress)、JSP、ASP.NET |
+| **智能参数分片** | 按SQL关键字边界拆分，分配到不同参数名(q1,q2,q3...) | 支持参数合并的自定义应用 |
+| **Multipart分片** | 使用multipart/form-data边界将Payload隐藏在多个表单部分中 | 文件上传接口、REST API |
+| **SQL注释分片** | 在SQL关键字/字符间插入内联注释块(/**/)，破坏关键字完整性匹配 | 基于正则的SQL注入防护 |
+| **管道化请求** | 在前面附加无害的pipeline请求，利用WAF只检查第一个请求的弱点 | HTTP/1.1 Keep-Alive连接 |
+| **NULL字节分片** | 在字符/单词间插入NULL字节，利用C语言字符串终止截断WAF解析 | 基于C/C++的WAF引擎 |
+| **编码链分片** | 将Payload不同部分使用不同编码(URL/Unicode/HTML实体)，WAF难以统一解码 | 多层编码处理的WAF |
+
+**使用示例：**
+
+```bash
+# 使用HPP分片绕过
+python wafbypass -u "https://target.com/?id=1" -p "' UNION SELECT NULL--" -e "' UNION SELECT NULL--" content.tampers.hpp_split
+
+# 组合多种分片策略
+python wafbypass -u "https://target.com/?q=test" -p "' UNION SELECT NULL--" \
+  -e "' UNION SELECT NULL--" content.tampers.param_fragment content.tampers.null_byte_fragment content.tampers.sql_comment_fragment
 ```
 
 ---
