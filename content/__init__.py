@@ -290,7 +290,15 @@ def get_working_tampers(url, norm_response, payloads, **kwargs):
                 vector = tamper.tamper(vector)
                 if verbose:
                     lib.formatter.payload(vector.strip())
-                payloaded_url = "{}{}".format(url, vector)
+
+                # Smart URL assembly: if tamper produces fragment with &params, stitch correctly
+                if "&" in vector and "=" in vector and "?" in url:
+                    payloaded_url = "{}&{}".format(url, vector)
+                elif "&" in vector and "=" in vector:
+                    payloaded_url = "{}?{}".format(url, vector) if "?" not in url else "{}{}".format(url, vector)
+                else:
+                    payloaded_url = "{}{}".format(url, vector)
+
                 _, status, html, _ = lib.settings.get_page(
                     payloaded_url, agent=agent, proxy=proxy, verbose=verbose, provided_headers=provided_headers,
                     throttle=throttle, timeout=req_timeout
@@ -299,10 +307,8 @@ def get_working_tampers(url, norm_response, payloads, **kwargs):
                     if verbose:
                         if status != 0:
                             lib.formatter.debug("response code: {}".format(status))
-                        else:
-                            lib.formatter.debug("unknown response detected")
-                    if status != 404:
-                        if status == 200:
+                    if status not in (0, 404):
+                        if 200 <= status < 400 or status in (403, 500):
                             try:
                                 if load not in good_tamper_paths:
                                     working_tampers.add((tamper.__type__, tamper.tamper(tamper.__example_payload__), load))
