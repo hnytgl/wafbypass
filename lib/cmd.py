@@ -190,8 +190,8 @@ class WAFBypassParser(ArgumentParser):
 
         misc = parser.add_argument_group("misc arguments",
                                          "arguments that don't fit in any other category")
-        misc.add_argument("--verbose", dest="runInVerbose", action="store_true",
-                          help="Run in verbose mode (more output)")
+        misc.add_argument("-v", "--verbose", dest="runInVerbose", action="store_true",
+                          help="Run in verbose mode (show per-request status and tamper progress)")
         misc.add_argument("--hide", dest="hideBanner", action="store_true",
                           help="Hide the banner during the run")
         misc.add_argument("--update", dest="updateWAFBypass", action="store_true",

@@ -87,3 +87,10 @@ def discover(string):
     print(
         "\033[38m[{}]\033[0m".format(time.strftime("%H:%M:%S")) + set_color("[FIREWALL] {}".format(string), level=45)
     )
+
+
+def progress(counter, name):
+    print(
+        "\033[38m[{}]\033[0m".format(time.strftime("%H:%M:%S")) + set_color("[TRY]".format(counter), level=10) +
+        " {} {}".format(counter, name)
+    )

@@ -277,51 +277,67 @@ def get_working_tampers(url, norm_response, payloads, **kwargs):
     working_tampers = set()
     _, normal_status, _, _ = norm_response
     good_tamper_paths = []
-    lib.formatter.info("running tampering bypass checks")
-    for tamper in tampers:
-        load = tamper
-        if verbose:
-            try:
-                lib.formatter.debug("currently tampering with script '{}".format(str(load).split(" ")[1].split(".")[-1]))
-            except:
-                pass
-        for vector in payloads:
-            try:
-                vector = tamper.tamper(vector)
-                if verbose:
-                    lib.formatter.payload(vector.strip())
+    total_tampers = len(tampers)
+    total_payloads = len(payloads)
 
-                # Smart URL assembly: if tamper produces fragment with &params, stitch correctly
-                if "&" in vector and "=" in vector and "?" in url:
-                    payloaded_url = "{}&{}".format(url, vector)
-                elif "&" in vector and "=" in vector:
-                    payloaded_url = "{}?{}".format(url, vector) if "?" not in url else "{}{}".format(url, vector)
+    lib.formatter.info("running tampering bypass checks ({} tampers x {} payloads, {} total requests)".format(
+        total_tampers, total_payloads, total_tampers * total_payloads
+    ))
+
+    tamper_idx = 0
+    for tamper in tampers:
+        tamper_idx += 1
+        load = tamper
+        tamper_name = ""
+        try:
+            tamper_name = str(load).split(" ")[1].split(".")[-1].strip(">'")
+        except:
+            tamper_name = str(load.__class__.__name__)
+
+        # Always show tamper progress
+        _progress = "[{}/{}]".format(tamper_idx, total_tampers)
+        lib.formatter.progress(_progress, tamper_name)
+
+        payload_idx = 0
+        for vector in payloads:
+            payload_idx += 1
+            try:
+                tampered = tamper.tamper(vector)
+
+                # Smart URL assembly
+                if "&" in tampered and "=" in tampered and "?" in url:
+                    payloaded_url = "{}&{}".format(url, tampered)
+                elif "&" in tampered and "=" in tampered:
+                    payloaded_url = "{}?{}".format(url, tampered) if "?" not in url else "{}{}".format(url, tampered)
                 else:
-                    payloaded_url = "{}{}".format(url, vector)
+                    payloaded_url = "{}{}".format(url, tampered)
 
                 _, status, html, _ = lib.settings.get_page(
                     payloaded_url, agent=agent, proxy=proxy, verbose=verbose, provided_headers=provided_headers,
                     throttle=throttle, timeout=req_timeout
                 )
+
                 if not find_failures(str(html), failed_schema):
-                    if verbose:
-                        if status != 0:
-                            lib.formatter.debug("response code: {}".format(status))
                     if status not in (0, 404):
                         if 200 <= status < 400 or status in (403, 500):
                             try:
                                 if load not in good_tamper_paths:
                                     working_tampers.add((tamper.__type__, tamper.tamper(tamper.__example_payload__), load))
                                     good_tamper_paths.append(load)
+                                    lib.formatter.success("bypass found! tamper=[{}] payload=[{}] status=[{}]".format(
+                                        tamper_name, tampered[:60], status
+                                    ))
                             except:
                                 pass
-                else:
-                    if verbose:
-                        lib.formatter.warn("failure found in response content")
+
+                if verbose:
+                    _icon = "O" if status and 200 <= status < 400 else "X" if status in (403, 406) else "?"
+                    lib.formatter.debug("  payload {}/{} [{}] status={} len={}".format(
+                        payload_idx, total_payloads, _icon, status, len(str(html))
+                    ))
+
                 if len(working_tampers) == max_successful_payloads:
                     break
-            # simple sloppy little fix for issue #376, we'll just continue if we hit the problem
-            # i honestly have no idea if this will cause future issues or not
             except RuntimeError:
                 pass
             except Exception as e:
@@ -331,6 +347,10 @@ def get_working_tampers(url, norm_response, payloads, **kwargs):
                     raise e.__class__("Exception caught: {} ~~> {}".format(e.__class__, e.message))
         if len(working_tampers) == max_successful_payloads:
             break
+
+    lib.formatter.info("bypass check complete: {}/{} working tampers found".format(
+        len(working_tampers), total_tampers
+    ))
     return working_tampers
 
 
