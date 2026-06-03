@@ -18,7 +18,7 @@ def tamper(payload, **kwargs):
         lambda s: ''.join('%{:02x}'.format(ord(c)) for c in s),
         lambda s: urllib.parse.quote(s),
         lambda s: ''.join('&#{};'.format(ord(c)) for c in s),
-        lambda s: ''.join('\u{:04x}'.format(ord(c)) for c in s),
+        lambda s: ''.join('\\u{:04x}'.format(ord(c)) for c in s),
     ]
 
     retval = ""
