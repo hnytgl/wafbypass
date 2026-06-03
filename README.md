@@ -29,8 +29,8 @@
 
 ## 功能特性
 
-- **WAF检测**：支持检测 **103+** 种Web应用防火墙和防护系统
-- **自动绕过**：内置 **55+** 种绕过脚本（Tamper Scripts）
+- **WAF检测**：支持检测 **112+** 种Web应用防火墙和防护系统
+- **自动绕过**：内置 **61** 种绕过脚本（Tamper Scripts）
 - **多种输入方式**：支持单URL、批量URL列表、Burp Suite导出文件、Googler JSON文件
 - **多种输出格式**：支持 JSON、YAML、CSV 格式化输出
 - **数据库缓存**：自动缓存检测结果，避免重复扫描
@@ -41,12 +41,15 @@
 - **Web服务器识别**：自动识别后端Web服务器类型
 - **POST请求支持**：支持GET和POST两种请求方式
 - **流量记录**：支持将HTTP请求流量保存到文件
+- **HTML报告**：生成专业级HTML渗透测试报告
+- **Payload分类**：内置SQLi/XSS/XXE/SSTI/LFI/CMDi 6类攻击载荷库
+- **配置文件**：支持YAML配置文件，一键加载扫描设置
 
 ---
 
 ## 可检测的防火墙
 
-WAFBypass 目前可以检测 **103+** 种Web应用防护系统，包括但不限于：
+WAFBypass 目前可以检测 **112+** 种Web应用防护系统，包括但不限于：
 
 | 类别 | 防火墙 |
 |------|--------|
@@ -54,7 +57,7 @@ WAFBypass 目前可以检测 **103+** 种Web应用防护系统，包括但不限
 | **CDN/WAF** | Akamai, CloudFront, Fastly, EdgeCast, Incapsula, Sucuri, StackPath |
 | **企业级** | F5 BIG-IP/ASM, Fortinet FortiWeb, Citrix NetScaler, Barracuda, Radware, Imperva |
 | **开源方案** | ModSecurity, NAXSI, OpenResty WAF, Shadow Daemon, Lua Resty WAF |
-| **国内厂商** | 安全狗(SafeDog), 阿里云盾(AliYunDun), 百度云加速, 创宇盾, 玄武盾, 安恒明御, 深信服(Sangfor), 绿盟(NSFOCUS), 知道创宇(KnownSec) |
+| **国内厂商** | 安全狗(SafeDog), 阿里云盾, 百度云加速, 创宇盾, 玄武盾, 安恒明御(DBapp), 深信服(Sangfor), 绿盟(NSFOCUS), 知道创宇(KnownSec), 奇安信(Qianxin), 山石(Hillstone), 启明星辰(Venustech), 天融信(TopSec), 火山引擎(Volcengine), 腾讯云WAF, 华为云WAF |
 | **其他** | Wordfence, Wallarm, Reblaze, Signal Sciences, Cloudbric |
 
 查看完整列表：
@@ -66,7 +69,7 @@ wafbypass --wafs
 
 ## 可用的绕过脚本
 
-WAFBypass 内置 **55+** 种绕过脚本，涵盖以下技术：
+WAFBypass 内置 **61** 种绕过脚本，涵盖以下技术：
 
 | 类型 | 脚本示例 |
 |------|---------|
@@ -322,6 +325,28 @@ $ python wafbypass -u https://example.com/search.php?q=1 -p "' OR SLEEP(5)--" -e
 $ python wafbypass -u https://example.com/ --tor --check-tor
 ```
 
+### 示例5：生成HTML报告
+
+```bash
+$ python wafbypass -u https://example.com/?id=1 --html-report -F -J
+```
+
+### 示例6：按攻击类型选择Payload
+
+```bash
+# 只使用SQL注入载荷
+$ python wafbypass -u https://example.com/?id=1 --payload-type sqli
+
+# 只使用XSS载荷
+$ python wafbypass -u https://example.com/?q=test --payload-type xss
+```
+
+### 示例7：使用配置文件
+
+```bash
+$ python wafbypass --config content/files/example_config.yaml -u https://example.com/
+```
+
 ---
 
 ## Docker 部署
@@ -385,8 +410,12 @@ A: 在 `content/tampers/` 目录下创建新的Python文件，遵循现有的脚
 本项目基于 [WhatWaf](https://github.com/Ekultek/WhatWaf) 进行了全面升级。感谢原作者的出色工作。
 
 升级内容包括：
-- 新增 15+ WAF检测插件（AWS v2, Azure, GCP, Tencent, Huawei等）
-- 新增 20+ 绕过脚本（Chunked传输, HPP, JSON/XML编码, Unicode规范化等）
+- 新增 26 个WAF检测插件（AWS v2, Azure, GCP, Tencent, Huawei, 奇安信, 山石, 安恒, 启明, 天融信, 火山引擎等），总计112+
+- 新增 25 个绕过脚本（Chunked传输, HPP分片, Multipart分片, SQL注释分片, NULL字节分片, 编码链分片等），总计61个
+- Payload分片绕过技术套件（7项分片策略）
+- HTML专业报告生成（`--html-report`）
+- 6类Payload分类库（SQLi/XSS/XXE/SSTI/LFI/CMDi）
+- YAML配置文件支持
 - 核心引擎现代化改造（Session管理, 连接池, 重试机制）
-- 更丰富的Payload集合
+- 更丰富的Payload集合（40+条）
 - 完整的中文文档
